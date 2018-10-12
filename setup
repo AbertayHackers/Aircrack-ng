@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bash-scripts/setup
+# Aircrack-ng/setup
 
 # setup
 #   Setup airodump-ng to capture WPA handshake

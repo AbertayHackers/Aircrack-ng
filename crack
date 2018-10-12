@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bash-scripts/crack
+# Aircrack-ng/crack
 
 # crack
 #   Crack demo*.cap file using aircrack
