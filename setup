@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# bash-scripts/setup
+
+# setup
+#   Setup airodump-ng to capture WPA handshake
+
+set -euo pipefail
+# -e exit if any command returns non-zero status code
+# -u prevent using undefined variables
+# -o pipefail force pipelines to fail on first non-zero status code
+
+IFS=$'\n\t'
+# Set Internal Field Separator to newlines and tabs
+# This makes bash consider newlines and tabs as separating words
+# See: http://redsymbol.net/articles/unofficial-bash-strict-mode/
+
+
+function usage {
+  echo -e "\\n  ./setup [network-channel] [network-bssid] \\n"
+  echo "  Setup airodump-ng to capture WPA handshake"
+  echo -e "  Outputs demo.cap\\n"
+
+  exit 0
+}
+
+
+function ctrl_c {
+  echo -e "\\n[ ] ${USER} has chosen to quit!"
+  exit 1
+}
+
+
+function main {
+
+  declare -r channel=${1:-""}
+  declare -r bssid=${2:-""}
+
+  if [[ $# -eq 0 ]] ; then
+    # If no args then print help
+    usage
+  elif ! [[ "${channel}" =~ ^-?[0-9]+$ ]]; then
+    echo "[ ] network-channel must be an integer!"
+    exit 1
+  elif ! [[ "${bssid}" =~ ^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$ ]]; then
+    echo "[ ] network-bssid is not a valid MAC address!"
+    exit 1
+  fi
+
+  trap ctrl_c SIGINT
+  # Detect and react to the user hitting CTRL + C
+
+  airmon-ng check kill
+  airmon-ng start wlan0
+
+  airodump-ng -c "${channel}" --bssid "${bssid}" -w demo wlan0mon
+}
+
+main "$@"
